@@ -1,0 +1,15 @@
+input[type="text"].ng-invalid {
+            border-color: pink;
+        }
+        input[type="text"].ng-valid {
+            border-color: lightgreen;
+        }
+        input[type="number"].ng-invalid {
+            border-color: pink;
+        }
+        input[type="number"].ng-valid {
+            border-color: lightgreen;
+        }
+        input.ng-pristine {
+            border-color: lightblue;
+        }

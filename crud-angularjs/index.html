@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>simple CRUD with AngularJS</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="jumbotron">
+    <div class="container">
+        <h1>Products manager</h1>
+    </div>
+</div>
+<div class="container" ng-app="myApp" ng-controller="myController">   <!--container start-->
+
+    <!-- Search form -->
+    <div class="form-inline">
+        <input class="form-control col-md-2" type="search" placeholder="Search" aria-label="Search" ng-model="query">
+    </div>
+
+    <table class="table table-striped">   <!--table start-->
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-cloak ng-repeat="product in products | filter:query | orderBy:'name'">
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.price|currency:'€' }}</td>
+            <td>{{ product.quantity|number }}</td>
+            <td>
+                <a class="btn btn-danger" href="#" ng-click="delete( product.id )">Delete</a> &nbsp;
+                <a class="btn btn-primary" href="#" ng-click="selectEdit( product.id )">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>   <!--table end-->
+
+    <h4 class="text-center">Product information</h4>
+    <form name="saveForm">
+        <input type="text" ng-model="record.id" ng-show="false" />
+        <div class="form-group">
+            <label for="record_name">Name</label>
+            <input type="text" class="form-control" id="record_name" ng-model="record.name" ng-required="true"
+                   ng-focus="editMode == 'update'" minlength="2" maxlength="40" size="30" />
+        </div>
+        <div class="form-group">
+            <label for="record_price">Price</label>
+            <input type="number" class="form-control" id="record_price" ng-model="record.price" ng-required="true"
+                   min=".01" max="999999999" step=".01"/>
+        </div>
+        <div class="form-group">
+            <label for="record_quantity">Quantity</label>
+            <input type="number" class="form-control" id="record_quantity" ng-model="record.quantity" ng-required="true"
+                   min=".01" max="999999999" step=".01"/>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" ng-click="add()" ng-disabled="editMode == 'update'">Add</button>
+            <button type="submit" class="btn btn-success" ng-click="update()" ng-disabled="editMode == 'add'">Update</button>
+            <button type="submit" class="btn btn-secondary" ng-click="cancel()">Cancel</button>
+        </div>
+    </form>   <!--form end-->
+
+    <div ng-if="message.show">
+        <div class="alert alert-{{message.type}}">{{message.content}}</div>
+    </div>
+
+</div>   <!--container end-->
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.7.8/angular-locale_en-en.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>
