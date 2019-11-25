@@ -69,10 +69,12 @@ var entityManager = (function () {
      */
     class UI {
 
-        static displayItems() {
-            const items = []; // dataProxy.getAll();  TODO : debug getAll which is not working
-          console.log(items);
-            items.forEach((item) => UI.addItemToList(item));
+        static displayItems(proxy) {
+            const items = proxy.getAll();
+            items.then(data => {
+                data.forEach((item) => UI.addItemToList(item));
+            });
+
         }
 
         static addItemToList(item) {
@@ -293,7 +295,6 @@ var entityManager = (function () {
                 }
             }
         }
-        // console.log(localize);
 
         messages.allrequired = localize[locale].allrequired;
         messages.novalid = localize[locale].novalid;
@@ -312,6 +313,7 @@ var entityManager = (function () {
         name_entity = param.entityName;
         key_entity = param.entityKey;
         fields = param.fields;
+
         field_key = param.fieldKey;
         constraints = param.constraints || {};
 
@@ -320,6 +322,21 @@ var entityManager = (function () {
         messages.deleted = `${name_entity} deleted`;
         messages.added = `${name_entity} added`;
         messages.edited = `${name_entity} edited`;
+
+        // Mockup data for starting
+        let mockup_data = param.load_mockup || [];
+        if (mockup_data.length > 0) {
+            let command = dataProxy.import(mockup_data);
+            command.then(result => {
+                if (result.success) {
+                    console.log(result.value);
+                } else {
+                    if (result.errors != undefined) {
+                        console.log(result.errors);
+                    }
+                }
+            });
+        }
 
         //---- FIND THE MAIN CONTAINER
         main_container = document.getElementById(container);
@@ -378,6 +395,7 @@ var entityManager = (function () {
                     }
                     form_values[item] = String(form_item.value).trim();
                 });
+                form_values[field_key] = crud_key_field.value;
 
                 // Validate
 
@@ -405,11 +423,10 @@ var entityManager = (function () {
                         }
                       });
 
-
                     } else {
                         if (crud_action_field.value == 'delete') {
                           let key = crud_key_field.value;
-                          let command = service.deleteCommand(key);
+                          let command = service.destroyCommand(key);
                           command.execute().then(result => {
                             if (result.success) {
                               console.log(result.value); // prints the inserted object with the assigned id
@@ -502,21 +519,7 @@ var entityManager = (function () {
               //  store.clearStore();
             }
 
-            // Mockup data for starting
-            let mockup_data = param.load_mockup || [];
-            mockup_data.forEach(item => {
-                let book = new Model(item);
-                let command = service.insertCommand(item);
-                command.execute().then(result => {
-                  if (result.success) {
-                    console.log(result.value); // prints the inserted object with the assigned id
-                  } else {
-                    console.log(result.errors);
-                  }
-                });
-            });
-
-            UI.displayItems();
+            UI.displayItems(dataProxy);
             UI.clearFields();
 
             return self;
